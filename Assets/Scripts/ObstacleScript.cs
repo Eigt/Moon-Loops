@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Linq;
 using UnityEngine;
 
 public class ObstacleScript : MonoBehaviour
@@ -8,15 +7,14 @@ public class ObstacleScript : MonoBehaviour
 
     private float _timeToReset = 0;
     private float _timer;
+    char[] _alphabet = Enumerable.Range('A', 'Z' - 'A' + 1).Select(i => (char)i).ToArray();
 
     // Start is called before the first frame update
     void Start()
     {
-        if (SettingsManager.Settings.TryGetValue("TimeToReset", out string timeVal))
-        {
-            _timeToReset = int.Parse(timeVal);
-        }
+        SettingsManager.TryGet("TimeToReset", ref _timeToReset);
 
+        Text = _alphabet[Random.Range(0, _alphabet.Length)];
         GetComponentInChildren<TextMesh>().text = Text.ToString();
     }
 
@@ -36,7 +34,7 @@ public class ObstacleScript : MonoBehaviour
     public void Deactivate()
     {
         GetComponentInChildren<TextMesh>().gameObject.SetActive(false);
-        Text = 'Z';
+        Text = _alphabet[Random.Range(0, _alphabet.Length)];
         _timer = _timeToReset;
     }
 

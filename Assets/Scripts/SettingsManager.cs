@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
@@ -48,5 +49,22 @@ public class SettingsManager : MonoBehaviour
                 line = reader.ReadLine();
             }
         }
+    }
+
+    public static bool TryGet<T>(string key, ref T value)
+    {
+        bool success = false;
+
+        if (Settings.TryGetValue(key, out string str))
+        {
+            T val = (T)Convert.ChangeType(str, typeof(T));
+            if (val != null)
+            {
+                value = val;
+                success = true;
+            }
+        }
+
+        return success;
     }
 }
