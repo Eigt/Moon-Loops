@@ -2,9 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class OrbitScript : MonoBehaviour
 {
+    #region Events
+    public UnityEvent Launch;
+    #endregion
+
+    #region Fields
     public GameObject StartingMoon;
     public eStateOrbiter State { get => _state; }
     public GameObject ParentMoon { get => _parentMoon; }
@@ -16,9 +22,14 @@ public class OrbitScript : MonoBehaviour
     private GameObject _parentMoon;
     private eStateOrbiter _state;
     private bool _canLaunch = false;
+    private bool _autoLaunch = false;
     private GameObject _currentObstacle = null;
-    private float _nextRotation = 180;
+    private float _nextRotation = 0;
+    private float _timePenalty = 1;
+    private float _timerPenalty = 0;
+    #endregion
 
+    #region Methods
     // Start is called before the first frame update
     void Start()
     {
@@ -27,29 +38,46 @@ public class OrbitScript : MonoBehaviour
         else
             _parentMoon = GameObject.FindGameObjectWithTag("Moon");
 
+        _state = eStateOrbiter.Launch;
+
         SettingsManager.TryGet("RotationSpeed", ref _rotationSpeed);
         SettingsManager.TryGet("LaunchSpeed", ref _launchSpeed);
+        SettingsManager.TryGet("AutoLaunch", ref _autoLaunch);
+        SettingsManager.TryGet("TimePenalty", ref _timePenalty);
     }
 
     // Update is called once per frame
     void Update()
     {
+        if (_timerPenalty > 0)
+        {
+            _timerPenalty -= Time.deltaTime;
+        }
         if (_state == eStateOrbiter.Orbit)
         {
-            if ((Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space)) && _canLaunch)
+            if ((Input.GetMouseButtonDown(0) || Input.GetKeyDown(KeyCode.Space) || _autoLaunch == true) 
+                && _canLaunch)
             {
                 _state = eStateOrbiter.Launch;
                 _parentMoon = GameObject.FindGameObjectsWithTag("Moon").Where(o => o.Equals(_parentMoon) == false).First();
+                Launch.Invoke();
             }
             else
             {
-                if (Input.anyKeyDown && _currentObstacle != null)
+                if (Input.anyKeyDown)
                 {
-                    char text = _currentObstacle.GetComponent<ObstacleScript>().Text;
-                    KeyCode key = (KeyCode)System.Enum.Parse(typeof(KeyCode), text.ToString());
-                    if (Input.GetKeyDown(key))
+                    if (_currentObstacle != null && _timerPenalty <= 0)
                     {
-                        _currentObstacle.GetComponent<ObstacleScript>().Deactivate();
+                        char text = _currentObstacle.GetComponent<ObstacleScript>().Text;
+                        KeyCode key = (KeyCode)System.Enum.Parse(typeof(KeyCode), text.ToString());
+                        if (Input.GetKeyDown(key))
+                        {
+                            _currentObstacle.GetComponent<ObstacleScript>().Deactivate();
+                        }
+                    }
+                    else if (_currentObstacle == null)
+                    {
+                        _timerPenalty = _timePenalty;
                     }
                 }
                 this.transform.RotateAround(_parentMoon.transform.position, Vector3.forward, _rotationSpeed * Time.deltaTime);
@@ -92,6 +120,7 @@ public class OrbitScript : MonoBehaviour
             _currentObstacle = null;
         }
     }
+    #endregion Methods
 }
 
 public enum eStateOrbiter

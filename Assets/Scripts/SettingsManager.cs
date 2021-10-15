@@ -6,9 +6,12 @@ using UnityEngine;
 
 public class SettingsManager : MonoBehaviour
 {
+    #region Fields
     readonly static string kSettingsFilePath = "settings.cfg";
     public static Dictionary<string, string> Settings { get; set; }
+    #endregion
 
+    #region Methods
     // Awake is called before all Start() calls
     private void Awake()
     {
@@ -67,4 +70,5 @@ public class SettingsManager : MonoBehaviour
 
         return success;
     }
+    #endregion
 }

@@ -4,13 +4,24 @@ using UnityEngine;
 
 public class ElevatorScript : MonoBehaviour
 {
+    #region Fields
     public Color DefaultColor = Color.white;
     public Color ActiveColor = Color.yellow;
 
+    private bool _canActivate = false;
+    #endregion
+
+    #region Methods
     // Start is called before the first frame update
     void Start()
     {
-        
+        bool autoLaunch = false;
+        SettingsManager.TryGet("AutoLaunch", ref autoLaunch);
+        _canActivate = !autoLaunch;
+        if (_canActivate == false)
+        {
+            GetComponent<CapsuleCollider2D>().size = new Vector2(0.16f, 0.16f);
+        }
     }
 
     // Update is called once per frame
@@ -21,11 +32,18 @@ public class ElevatorScript : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        GetComponent<SpriteRenderer>().color = ActiveColor;
+        if (_canActivate)
+        {
+            GetComponent<SpriteRenderer>().color = ActiveColor;
+        }
     }
 
     private void OnTriggerExit2D(Collider2D other)
     {
-        GetComponent<SpriteRenderer>().color = DefaultColor;
+        if (_canActivate)
+        {
+            GetComponent<SpriteRenderer>().color = DefaultColor;
+        }
     }
+    #endregion
 }
