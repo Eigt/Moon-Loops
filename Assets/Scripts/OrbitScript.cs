@@ -11,11 +11,8 @@ public class OrbitScript : MonoBehaviour
     #endregion
 
     #region Fields
-    public GameObject StartingMoon;
-    public eStateOrbiter State { get => _state; }
-    public GameObject ParentMoon { get => _parentMoon; }
-    public float LaunchSpeed { get => _launchSpeed; }
-
+    private float _baseRotationSpeed;
+    private float _baseLaunchSpeed;
     private float _rotationSpeed = 50f;
     private float _launchSpeed = 10f;
 
@@ -27,6 +24,11 @@ public class OrbitScript : MonoBehaviour
     private float _nextRotation = 0;
     private float _timePenalty = 1;
     private float _timerPenalty = 0;
+
+    public GameObject StartingMoon;
+    public eStateOrbiter State { get => _state; }
+    public GameObject ParentMoon { get => _parentMoon; }
+    public float LaunchSpeed { get => _launchSpeed; }
     #endregion
 
     #region Methods
@@ -44,6 +46,11 @@ public class OrbitScript : MonoBehaviour
         SettingsManager.TryGet("LaunchSpeed", ref _launchSpeed);
         SettingsManager.TryGet("AutoLaunch", ref _autoLaunch);
         SettingsManager.TryGet("TimePenalty", ref _timePenalty);
+        _baseRotationSpeed = _rotationSpeed;
+        _baseLaunchSpeed = _launchSpeed;
+
+        GameObject.FindGameObjectWithTag("GameController")
+            .GetComponent<DifficultyManager>().DifficultyChanged.AddListener(DifficultyChangedHandler);
     }
 
     // Update is called once per frame
@@ -119,6 +126,12 @@ public class OrbitScript : MonoBehaviour
         {
             _currentObstacle = null;
         }
+    }
+
+    private void DifficultyChangedHandler()
+    {
+        _rotationSpeed = _baseRotationSpeed * DifficultyManager.SpeedModifier;
+        _launchSpeed = _baseLaunchSpeed * DifficultyManager.SpeedModifier;
     }
     #endregion Methods
 }

@@ -41,17 +41,13 @@ public class WordManager : MonoBehaviour
             using (StreamReader reader = new StreamReader(fileName))
             {
                 string line = reader.ReadLine();
-                while (string.IsNullOrEmpty(line) == false)
+                string[] words = line.Split(' ');
+                foreach (string word in words)
                 {
-                    string[] words = line.Split(',');
-                    foreach (string word in words)
+                    if (word.Length == i)
                     {
-                        if (word.Length == i)
-                        {
-                            Words[i].Add(word);
-                        }
+                        Words[i].Add(word);
                     }
-                    line = reader.ReadLine();
                 }
             }
 

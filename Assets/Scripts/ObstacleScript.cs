@@ -4,11 +4,11 @@ using UnityEngine;
 public class ObstacleScript : MonoBehaviour
 {
     #region Fields
-    public char Text = 'X';
-    public bool IsActive = true;
-
     private float _timeToExpand = 1;
     private float _timerExpand;
+
+    public char Text = 'X';
+    public bool IsActive = true;
     #endregion Fields
 
     #region Methods
@@ -25,6 +25,10 @@ public class ObstacleScript : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (IsActive == true)
+        {
+            GetComponentInChildren<TextMesh>().text = Text.ToString();
+        }
         if (_timerExpand < _timeToExpand)
         {
             _timerExpand += Time.deltaTime;

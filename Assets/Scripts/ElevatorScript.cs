@@ -5,10 +5,10 @@ using UnityEngine;
 public class ElevatorScript : MonoBehaviour
 {
     #region Fields
+    private bool _canActivate = false;
+
     public Color DefaultColor = Color.white;
     public Color ActiveColor = Color.yellow;
-
-    private bool _canActivate = false;
     #endregion
 
     #region Methods

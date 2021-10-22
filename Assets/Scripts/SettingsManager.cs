@@ -44,11 +44,15 @@ public class SettingsManager : MonoBehaviour
             string line = reader.ReadLine();
             while (string.IsNullOrEmpty(line) == false)
             {
-                string[] id_value = line.Split('=');
-                if (id_value.Length == 2)
+                if (line.StartsWith("//") == false)
                 {
-                    Settings.Add(id_value[0], id_value[1]);
+                    string[] id_value = line.Split('=');
+                    if (id_value.Length == 2)
+                    {
+                        Settings.Add(id_value[0], id_value[1]);
+                    }
                 }
+                
                 line = reader.ReadLine();
             }
         }
@@ -66,6 +70,10 @@ public class SettingsManager : MonoBehaviour
                 value = val;
                 success = true;
             }
+        }
+        else
+        {
+            Debug.Log($"Tried to get nonexistent key {key} from settings.");
         }
 
         return success;
