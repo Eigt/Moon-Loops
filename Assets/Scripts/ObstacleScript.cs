@@ -56,8 +56,7 @@ public class ObstacleScript : MonoBehaviour
         {
             GetComponentInChildren<TextMesh>().gameObject.SetActive(false);
             IsActive = false;
-            //Text = _alphabet[Random.Range(0, _alphabet.Length)];
-            //_timerReset = _timeToReset;
+            GetComponentInParent<MoonScript>().CheckForScore();
         }
     }
     #endregion

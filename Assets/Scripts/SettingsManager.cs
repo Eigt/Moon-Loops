@@ -8,6 +8,20 @@ public class SettingsManager : MonoBehaviour
 {
     #region Fields
     readonly static string kSettingsFilePath = "settings.cfg";
+
+    private static SettingsManager _instance;
+    public static SettingsManager Instance 
+    {
+        get
+        {
+            if (_instance is null)
+            {
+                Debug.Log("SettingsManager is null");
+            }
+            return _instance;
+        }
+    }
+
     public static Dictionary<string, string> Settings { get; set; }
     #endregion
 
@@ -15,19 +29,8 @@ public class SettingsManager : MonoBehaviour
     // Awake is called before all Start() calls
     private void Awake()
     {
+        _instance = this;
         InitSettings();
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
     }
 
     /// <summary>

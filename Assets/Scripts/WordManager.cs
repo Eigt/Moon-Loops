@@ -7,6 +7,20 @@ public class WordManager : MonoBehaviour
 {
     #region Fields
     readonly static string kWordFilePath = "words{0}.txt";
+
+    private static WordManager _instance;
+    public static WordManager Instance
+    {
+        get
+        {
+            if (_instance is null)
+            {
+                Debug.Log("SettingsManager is null");
+            }
+            return _instance;
+        }
+    }
+
     public static List<List<string>> Words { get; set; }
     #endregion
 
@@ -14,19 +28,8 @@ public class WordManager : MonoBehaviour
     // Awake is called before all Start() calls
     private void Awake()
     {
+        _instance = this;
         InitWords();
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
     }
 
     private void InitWords()

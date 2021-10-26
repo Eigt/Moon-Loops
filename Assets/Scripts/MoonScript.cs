@@ -6,7 +6,8 @@ using UnityEngine.Events;
 public class MoonScript : MonoBehaviour
 {
     #region Events
-    public UnityEvent Scored;
+    public UnityEvent Scored_1;
+    public UnityEvent Scored_2;
     #endregion
 
     #region Fields
@@ -14,6 +15,7 @@ public class MoonScript : MonoBehaviour
 
     private float _timeToExpand = 1;
     private float _timerExpand;
+    private bool _changeWord = false;
 
     public string CurrentWord { get; private set; }
     #endregion
@@ -27,7 +29,6 @@ public class MoonScript : MonoBehaviour
 
         ObstacleChildren = GetComponentsInChildren<ObstacleScript>();
         GetNewWord(3);
-        GameObject.FindGameObjectWithTag("Player").GetComponent<OrbitScript>().Launch.AddListener(LaunchHandler);
     }
 
     // Update is called once per frame
@@ -53,26 +54,40 @@ public class MoonScript : MonoBehaviour
         }
     }
 
-    private void LaunchHandler()
+    public void CheckForScore()
     {
-        bool changeWord = true;
+        bool wordComplete = true;
         foreach (ObstacleScript child in ObstacleChildren)
         {
             if (child.IsActive == true)
             {
-                changeWord = false;
+                wordComplete = false;
                 break;
             }
         }
 
-        if (changeWord)
+        if (wordComplete)
         {
-            GetNewWord(3);
-            _timerExpand = 0;
-            Scored.Invoke();
+            _changeWord = true;
+            Scored_2?.Invoke();
         }
         else
         {
+            Scored_1?.Invoke();
+        }
+    }
+
+    public void LaunchHandler()
+    {
+        if (_changeWord)
+        {
+            _changeWord = false;
+            GetNewWord(3);
+            _timerExpand = 0;
+        }
+        else
+        {
+            // activate any activated children
             foreach (ObstacleScript child in ObstacleChildren)
             {
                 child.Activate();

@@ -5,36 +5,13 @@ using UnityEngine.Events;
 
 public class ScoreScript : MonoBehaviour
 {
-    #region Events
-    public UnityEvent ScoreChanged;
-    #endregion
-
-    #region Fields
-    private int _score = 0;
-
-    public int Score { get => _score; }
-    #endregion
-
-    #region Methods
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        foreach (GameObject moon in GameObject.FindGameObjectsWithTag("Moon"))
-        {
-            moon.GetComponent<MoonScript>().Scored.AddListener(ScoredHandler);
-        }
+        GetComponent<TextMesh>().text = "0";
     }
 
-    // Update is called once per frame
-    void Update()
+    public void ScoredHandler()
     {
-        GetComponent<TextMesh>().text = _score.ToString();
+        GetComponent<TextMesh>().text = GameManager.Score.ToString();
     }
-
-    private void ScoredHandler()
-    {
-        _score++;
-        ScoreChanged.Invoke();
-    }
-    #endregion
 }

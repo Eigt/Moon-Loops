@@ -8,6 +8,7 @@ public class OrbitScript : MonoBehaviour
 {
     #region Events
     public UnityEvent Launch;
+    public UnityEvent FirstOrbit;
     #endregion
 
     #region Fields
@@ -24,6 +25,7 @@ public class OrbitScript : MonoBehaviour
     private float _nextRotation = 0;
     private float _timePenalty = 1;
     private float _timerPenalty = 0;
+    private bool _hasFirstOrbit = false;
 
     public GameObject StartingMoon;
     public eStateOrbiter State { get => _state; }
@@ -48,9 +50,6 @@ public class OrbitScript : MonoBehaviour
         SettingsManager.TryGet("TimePenalty", ref _timePenalty);
         _baseRotationSpeed = _rotationSpeed;
         _baseLaunchSpeed = _launchSpeed;
-
-        GameObject.FindGameObjectWithTag("GameController")
-            .GetComponent<DifficultyManager>().DifficultyChanged.AddListener(DifficultyChangedHandler);
     }
 
     // Update is called once per frame
@@ -67,7 +66,7 @@ public class OrbitScript : MonoBehaviour
             {
                 _state = eStateOrbiter.Launch;
                 _parentMoon = GameObject.FindGameObjectsWithTag("Moon").Where(o => o.Equals(_parentMoon) == false).First();
-                Launch.Invoke();
+                Launch?.Invoke();
             }
             else
             {
@@ -97,6 +96,12 @@ public class OrbitScript : MonoBehaviour
             {
                 _state = eStateOrbiter.Orbit;
                 _canLaunch = false;
+
+                if (_hasFirstOrbit == false)
+                {
+                    _hasFirstOrbit = true;
+                    FirstOrbit?.Invoke();
+                }
 
                 this.transform.rotation = Quaternion.Euler(0, 0, _nextRotation);
                 _nextRotation = (_nextRotation + 180) % 360;
@@ -128,10 +133,21 @@ public class OrbitScript : MonoBehaviour
         }
     }
 
-    private void DifficultyChangedHandler()
+    public void DifficultyChangedHandler()
     {
-        _rotationSpeed = _baseRotationSpeed * DifficultyManager.SpeedModifier;
-        _launchSpeed = _baseLaunchSpeed * DifficultyManager.SpeedModifier;
+        _rotationSpeed = _baseRotationSpeed * GameManager.SpeedModifier;
+        _launchSpeed = _baseLaunchSpeed * GameManager.SpeedModifier;
+    }
+    
+
+    public void TimeOutHandler()
+    {
+        GameObject manager = GameObject.FindGameObjectWithTag("GameController");
+        if (manager != null)
+        {
+            manager.GetComponent<GameManager>().DifficultyChanged.RemoveListener(DifficultyChangedHandler);
+        }
+        GameObject.Destroy(this);
     }
     #endregion Methods
 }
