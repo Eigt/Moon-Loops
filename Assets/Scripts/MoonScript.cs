@@ -28,7 +28,7 @@ public class MoonScript : MonoBehaviour
         _timerExpand = _timeToExpand;
 
         ObstacleChildren = GetComponentsInChildren<ObstacleScript>();
-        GetNewWord(3);
+        GetNewWord();
     }
 
     // Update is called once per frame
@@ -43,11 +43,12 @@ public class MoonScript : MonoBehaviour
         }
     }
 
-    private void GetNewWord(int wordLength)
+    private void GetNewWord()
     {
+        int wordLength = ObstacleChildren.Length; // word length defined by number of letters orbiting moon
         CurrentWord = WordManager.GetRandomWord(wordLength);
         GetComponentInChildren<TextMesh>().text = CurrentWord;
-        for (int i = 0; i < ObstacleChildren.Length && i < CurrentWord.Length; i++)
+        for (int i = 0; i < wordLength; i++)
         {
             ObstacleChildren[i].Text = CurrentWord[i];
             ObstacleChildren[i].Activate();
@@ -82,7 +83,7 @@ public class MoonScript : MonoBehaviour
         if (_changeWord)
         {
             _changeWord = false;
-            GetNewWord(3);
+            GetNewWord();
             _timerExpand = 0;
         }
         else
